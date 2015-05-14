@@ -1,0 +1,14 @@
+name: leevstreet
+summary: "LiveStreet CMS"
+maintainer: Razin Ivan <mozaroc@gmail.com>
+description: |
+ LiveStreet CMS
+categories: ["applications"]
+requires:
+  mail:
+    interface: smtp
+  db:
+    interface: mysql
+provides:
+  website:
+    interface: http

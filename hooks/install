@@ -1,0 +1,39 @@
+#!/bin/sh -ex
+
+. inc/common
+
+juju-log "Installing software"
+
+apt-get update
+
+apt-get -y install --no-install-suggests --no-install-recommends  apache2 php5-gd libapache2-mod-php5 mysql-client-core-5.5 php5-mysql pwgen php5-curl php5-mcrypt unzip exim4-daemon-light php5-cli nginx sphinxsearch
+
+sed -i "s|dc_eximconfig_configtype='local'|dc_eximconfig_configtype='internet'|g" /etc/exim4/update-exim4.conf.conf
+
+update-exim4.conf
+
+a2enmod php5 headers rewrite
+a2dissite 000-default
+
+php5enmod mcrypt
+php5enmod curl
+
+service nginx stop
+service apache2 stop
+
+juju-log "Download"
+
+OC_TARBALL="http://heanet.dl.sourceforge.net/project/livestreet/LiveStreet%201.0/LiveStreet%201.0.3/LiveStreet_1.0.3.zip"
+
+curl -vv -L $OC_TARBALL > /tmp/livestreet.zip
+
+juju-log "Extract"
+
+mkdir -p $install_path
+mkdir -p /tmp/livestreet
+
+unzip /tmp/livestreet.zip -d /tmp/livestreet
+
+cp -fR /tmp/livestreet/* $install_path
+
+set_permissions
