@@ -1,0 +1,129 @@
+#############################################################################
+## data source definition
+#############################################################################
+
+source entityprefixSource
+{                                                                     
+type = mysql
+
+sql_host = localhost
+sql_user = root
+sql_pass = 
+sql_db = new
+sql_port = 3306
+
+sql_sock = /var/run/mysqld/mysqld.sock
+
+mysql_connect_flags = 32 # enable compression
+    
+sql_query_pre = SET NAMES utf8
+sql_query_pre = SET SESSION query_cache_type=OFF	
+}
+
+source entityprefixTopicsSource : entityprefixSource
+{                                                               
+sql_query = \
+SELECT t.topic_id, t.topic_title, UNIX_TIMESTAMP(t.topic_date_add) as topic_date_add, \
+tc.topic_text, t.topic_publish, b.blog_title, u.user_login \
+FROM prefix_topic t, prefix_topic_content tc, prefix_blog b, prefix_user u \
+WHERE t.topic_id=tc.topic_id AND t.topic_publish=1 \
+AND b.blog_id=t.blog_id AND t.user_id=u.user_id \
+AND t.topic_id>=$start AND t.topic_id<=$end
+ 
+sql_joined_field = tags from query; select topic_id, topic_tag_text \
+from prefix_topic_tag order by topic_id ASC
+
+sql_query_range = SELECT MIN(topic_id),MAX(topic_id) FROM prefix_topic
+        
+sql_range_step = 1000
+
+sql_attr_bool = topic_publish
+
+sql_attr_timestamp = topic_date_add
+
+sql_attr_multi = uint tag from query; SELECT topic_id, topic_tag_id FROM prefix_topic_tag
+}
+
+source entityprefixCommentsSource : entityprefixSource
+{
+sql_query = \
+SELECT m.comment_id, m.comment_text, UNIX_TIMESTAMP(m.comment_date) as comment_date, \
+m.comment_delete, u.user_login \
+FROM prefix_comment m, prefix_user u \
+WHERE m.target_type='topic' AND m.comment_delete=0 AND m.comment_publish=1 AND m.user_id=u.user_id \
+AND m.comment_id>=$start AND m.comment_id<=$end
+
+sql_query_range = SELECT MIN(comment_id),MAX(comment_id) FROM prefix_comment
+
+sql_range_step = 5000
+
+sql_attr_bool = comment_delete
+
+sql_attr_timestamp = comment_date
+}
+
+#############################################################################
+## index definition
+#############################################################################
+
+index entityprefixtopicsIndex
+{
+source = entityprefixTopicsSource
+
+path = /var/lib/sphinxsearch/data/entityprefix/topicsIndex
+
+wordforms = /var/lib/sphinxsearch/data/entityprefix/wordforms.txt
+
+docinfo = extern
+
+morphology = stem_enru
+        
+charset_type = utf-8
+
+html_strip = 1
+
+html_remove_elements = style, script, code
+}
+
+index entityprefixcommentsIndex : entityprefixtopicsIndex
+{
+source = entityprefixCommentsSource
+
+path = /var/lib/sphinxsearch/data/entityprefix/commentsIndex
+}
+
+#############################################################################
+## indexer settings
+#############################################################################
+
+indexer
+{
+mem_limit = 32M
+}
+
+#############################################################################
+## searchd settings
+#############################################################################
+
+searchd
+{	
+listen = /var/run/sphinxsearch/sphinx.socket
+    
+log = /var/log/sphinxsearch/searchd.log
+
+query_log = /var/log/sphinxsearch/query.log
+                                     
+read_timeout = 5
+                                        
+client_timeout = 300
+                                           
+max_children = 100
+                   
+pid_file = /var/run/sphinxsearch/searchd.pid
+                                            
+workers	= threads
+
+compat_sphinxql_magics = 0
+}
+
+#

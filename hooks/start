@@ -1,4 +1,4 @@
 #!/bin/sh -ex
 
-engine=`cat .web-engine`
-service $engine status || service $engine start
+service apache2 start
+service apache2 start

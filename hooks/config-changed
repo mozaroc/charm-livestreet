@@ -1,39 +1,36 @@
 #!/bin/sh -ex
 
 . inc/common
+mkdir -p /srv/www/htdocs
+rm -f /etc/apache2/sites-available/*
+rm -f /etc/apache2/sites-enabled/*
 
-tuning_level=`config-get tuning`
-engine=`config-get engine`
-unit_address=`unit-get private-address`
+a2enmod actions rewrite alias headers php5
 
-if [ "x$engine" = "xapache" -o "x${engine}" = "xapache2" ]; then
-	if [ -f .web-engine ]; then
-		web_engine=`cat .web-engine`
-		service $web_engine stop
-	fi
-	apt-get -y purge nginx
-	apt-get --no-install-suggests --no-install-recommends install -y apache2 libapache2-mod-php5
-	service apache2 stop
+juju-log "Installing Apache  config..."
+install -o root -g root -m 0644 files/charm/apache/etc_apache2_sites-enabled_livestreet /etc/apache2/sites-available/livestreet.conf
 
-  mkdir -p /srv/www/htdocs
+install -o root -g root -m 0644 files/charm/apache/etc_apache2_ports /etc/apache2/ports.conf
 
-  rm -f /etc/apache2/sites-available/*
-	rm -f /etc/apache2/sites-enabled/*
-	a2enmod actions rewrite alias headers php5
 
-	juju-log "Installing Apache loadbalance config..."
-	install -o root -g root -m 0644 files/charm/apache/etc_apache2_sites-enabled_loadbalancer /etc/apache2/sites-available/loadbalancer.conf
-	sed -i -e "s/^  ServerName .*/  ServerName ${unit_address}/" /etc/apache2/sites-available/loadbalancer.conf
-	a2ensite loadbalancer
+juju-log "Installing nginx config..."
+install -o root -g root -m 0644 files/charm/nginx/etc_nginx_sites-enabled_livestreet /etc/nginx/sites-available/livestreet.conf
+ln -s /etc/nginx/sites-available/livestreet.conf /etc/nginx/sites-enabled/livestreet.conf
 
-	juju-log "Installing Apache opencart config..."
-	install -o root -g root -m 0644 files/charm/apache/etc_apache2_sites-enabled_opencart /etc/apache2/sites-available/opencart.conf
-	a2ensite opencart
 
-	echo "apache2" > .web-engine
-fi
+a2ensite livestreet
 
-hooks/loadbalancer-rebuild
+juju-log "Installing sphinx config..."
+install -o root -g root -m 0644 files/charm/sphinx/etc_sphinx_sphinx-conf /etc/sphinxsearch/sphinx.conf
+
+juju-log "first index"
+/usr/bin/indexer --rotate entityprefixtopicsIndex
+/usr/bin/indexer --rotate entityprefixcommentsIndex
+
+service sphinxsearch start
+service apache2 restart
+service nginx restart
+
 
 juju-log "Restarting Services ..."
 hooks/restart

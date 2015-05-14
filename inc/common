@@ -4,7 +4,7 @@
 hostname=`unit-get public-address`
 private_name=`unit-get private-address`
 
-install_path="/srv/www/htdocs"
+install_path="/srv/www/livestreet/htdocs"
 
 # This file should contain common function definitions
 set_permissions() {
