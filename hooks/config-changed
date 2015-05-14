@@ -24,6 +24,7 @@ juju-log "Installing sphinx config..."
 install -o root -g root -m 0644 files/charm/sphinx/etc_sphinx_sphinx-conf /etc/sphinxsearch/sphinx.conf
 
 juju-log "first index"
+mkdir /var/lib/sphinxsearch/data/entityprefix/
 /usr/bin/indexer --rotate entityprefixtopicsIndex
 /usr/bin/indexer --rotate entityprefixcommentsIndex
 
