@@ -14,7 +14,7 @@ install -o root -g root -m 0644 files/charm/apache/etc_apache2_ports /etc/apache
 
 
 juju-log "Installing nginx config..."
-install -o root -g root -m 0644 files/charm/nginx/etc_nginx_sites-enabled_livestreet /etc/nginx/sites-available/livestreet.conf
+install -o root -g root -m 0644 files/charm/nginx/etc_nginx_sites_enabled_livestreet /etc/nginx/sites-available/livestreet.conf
 ln -s /etc/nginx/sites-available/livestreet.conf /etc/nginx/sites-enabled/livestreet.conf
 
 
