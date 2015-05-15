@@ -31,12 +31,16 @@ fi
 
 juju-log Config
 
-sed -i  "/pass/s/= '';/= '$password';/" $install_path/config/config.local.php.dist
-sed -i  "/user/s/= 'root';/= '$user';/" $install_path/config/config.local.php.dist
+
+sed -i "s|___INSTALL_DB_NAME___|$database|g" /srv/www/livestreet/htdocs/install/templates/db.tpl
+sed -i "s|___INSTALL_DB_USER___|$user|g" /srv/www/livestreet/htdocs/install/templates/db.tpl
+sed -i "s|___INSTALL_DB_PASSWORD___|$password|g" /srv/www/livestreet/htdocs/install/templates/db.tpl
+
 
 
 sed -i "/sql_user/s/= root/= $user/" /etc/sphinxsearch/sphinx.conf
 sed -i "/sql_pass/s/= /= $password/" /etc/sphinxsearch/sphinx.conf
+sed -i "/sql_db/s/= /= $database/" /etc/sphinxsearch/sphinx.conf
 
 #sed -i "s|value=\"{\$config.database_server}\"|value=\"$host\"|g" $install_path/setup/templates/database.tpl
 #sed -i "s|value=\"{\$config.database_user}\"|value=\"$user\"|g" $install_path/setup/templates/database.tpl
