@@ -31,8 +31,6 @@ install -o root -g root -m 0644 files/charm/sphinx/etc_sphinx_sphinx-conf /etc/s
 #/usr/bin/indexer --rotate entityprefixcommentsIndex
 
 #service sphinxsearch start
-service apache2 restart
-service nginx restart
 
 
 juju-log "Restarting Services ..."
