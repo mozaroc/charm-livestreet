@@ -32,9 +32,9 @@ fi
 juju-log Config
 
 
-sed -i "s|___INSTALL_DB_NAME___|$database|g" /srv/www/livestreet/htdocs/install/templates/db.tpl
-sed -i "s|___INSTALL_DB_USER___|$user|g" /srv/www/livestreet/htdocs/install/templates/db.tpl
-sed -i "s|___INSTALL_DB_PASSWORD___|$password|g" /srv/www/livestreet/htdocs/install/templates/db.tpl
+sed -i "s|___INSTALL_DB_NAME___|$database|g" /srv/www/livestreet/htdocs/install/templates/steps/db.tpl
+sed -i "s|___INSTALL_DB_USER___|$user|g" /srv/www/livestreet/htdocs/install/templates/steps/db.tpl
+sed -i "s|___INSTALL_DB_PASSWORD___|$password|g" /srv/www/livestreet/htdocs/install/templates/steps/db.tpl
 
 
 
