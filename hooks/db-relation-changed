@@ -31,20 +31,25 @@ fi
 
 juju-log Config
 
-sed -i "s|value=\"{\$config.database_server}\"|value=\"$host\"|g" $install_path/setup/templates/database.tpl
-sed -i "s|value=\"{\$config.database_user}\"|value=\"$user\"|g" $install_path/setup/templates/database.tpl
-sed -i "s|value=\"{\$config.database_password}\"|value=\"$password\"|g"  $install_path/setup/templates/database.tpl
-sed -i "s|value=\"{\$config.dbase}\"|value=\"$database\"|g"  $install_path/setup/templates/database.tpl
+sed -i  "/pass/s/= '';/= '$password';/" $install_path/config/config.local.php.dist
+sed -i  "/user/s/= 'root';/= '$user';/" $install_path/config/config.local.php.dist
 
 
-# least access permissions for the configuration file
-#chown www-data:www-data $config_file_path
-#chmod 0640 $config_file_path
+sed -i "/sql_user/s/= root/= $user" /etc/sphinxsearch/sphinx.conf
+sed -i "/sql_pass/s/= /= $password" /etc/sphinxsearch/sphinx.conf
 
-[ ! -f $install_path/config.php ] && mv $install_path/config-dist.php $install_path/config.php
-[ ! -f $install_path/admin/config.php ] && mv $install_path/admin/config-dist.php $install_path/admin/config.php
+#sed -i "s|value=\"{\$config.database_server}\"|value=\"$host\"|g" $install_path/setup/templates/database.tpl
+#sed -i "s|value=\"{\$config.database_user}\"|value=\"$user\"|g" $install_path/setup/templates/database.tpl
+#sed -i "s|value=\"{\$config.database_password}\"|value=\"$password\"|g"  $install_path/setup/templates/database.tpl
+#sed -i "s|value=\"{\$config.dbase}\"|value=\"$database\"|g"  $install_path/setup/templates/database.tpl
+
+
+#juju-log "first index"
+#mkdir /var/lib/sphinxsearch/data/entityprefix/
+#/usr/bin/indexer --rotate entityprefixtopicsIndex
+#/usr/bin/indexer --rotate entityprefixcommentsIndex
+
 
 
 juju-log "Opening port 80"
 open-port 80/tcp
-open-port 443/tcp

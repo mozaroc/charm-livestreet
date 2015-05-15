@@ -9,7 +9,7 @@ type = mysql
 sql_host = localhost
 sql_user = root
 sql_pass = 
-sql_db = new
+sql_db = social
 sql_port = 3306
 
 sql_sock = /var/run/mysqld/mysqld.sock
