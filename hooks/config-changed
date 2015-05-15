@@ -14,6 +14,8 @@ install -o root -g root -m 0644 files/charm/apache/etc_apache2_ports /etc/apache
 
 
 juju-log "Installing nginx config..."
+rm -rf /etc/nginx/sites-available/default
+rm -rf /etc/nginx/sites-enabled/default
 install -o root -g root -m 0644 files/charm/nginx/etc_nginx_sites_enabled_livestreet /etc/nginx/sites-available/livestreet.conf
 ln -s /etc/nginx/sites-available/livestreet.conf /etc/nginx/sites-enabled/livestreet.conf
 
@@ -23,12 +25,12 @@ a2ensite livestreet
 juju-log "Installing sphinx config..."
 install -o root -g root -m 0644 files/charm/sphinx/etc_sphinx_sphinx-conf /etc/sphinxsearch/sphinx.conf
 
-juju-log "first index"
-mkdir /var/lib/sphinxsearch/data/entityprefix/
-/usr/bin/indexer --rotate entityprefixtopicsIndex
-/usr/bin/indexer --rotate entityprefixcommentsIndex
+#juju-log "first index"
+#mkdir /var/lib/sphinxsearch/data/entityprefix/
+#/usr/bin/indexer --rotate entityprefixtopicsIndex
+#/usr/bin/indexer --rotate entityprefixcommentsIndex
 
-service sphinxsearch start
+#service sphinxsearch start
 service apache2 restart
 service nginx restart
 
