@@ -1,0 +1,6 @@
+StepFinish
+
+exec ("/usr/bin/indexer --rotate entityprefixtopicsIndex");
+exec ("/usr/bin/indexer --rotate entityprefixcommentsIndex");
+exec ("searchd");
+exec ("rm -fr /srv/www/livestreet/htdocs/install");

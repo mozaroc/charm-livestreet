@@ -36,4 +36,6 @@ unzip /tmp/livestreet.zip -d /tmp/livestreet
 
 cp -fR /tmp/livestreet/* $install_path
 
+install -o root -g root -m 0644 files/charm/apache/htaccess $install_path/.htaccess
+
 set_permissions
