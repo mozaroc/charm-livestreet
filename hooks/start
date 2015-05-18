@@ -1,4 +1,4 @@
 #!/bin/sh -ex
 
 service apache2 start
-service apache2 start
+service nginx start

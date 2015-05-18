@@ -8,15 +8,19 @@ rm -f /etc/apache2/sites-enabled/*
 a2enmod actions rewrite alias headers php5
 
 juju-log "Installing Apache  config..."
+
 install -o root -g root -m 0644 files/charm/apache/etc_apache2_sites-enabled_livestreet /etc/apache2/sites-available/livestreet.conf
 
 install -o root -g root -m 0644 files/charm/apache/etc_apache2_ports /etc/apache2/ports.conf
 
 
 juju-log "Installing nginx config..."
+
 rm -rf /etc/nginx/sites-available/default
 rm -rf /etc/nginx/sites-enabled/default
+
 install -o root -g root -m 0644 files/charm/nginx/etc_nginx_sites_enabled_livestreet /etc/nginx/sites-available/livestreet.conf
+
 ln -s /etc/nginx/sites-available/livestreet.conf /etc/nginx/sites-enabled/livestreet.conf
 
 
@@ -36,4 +40,5 @@ install -o root -g root -m 0644 files/charm/apache/htaccess $install_path/.htacc
 
 
 juju-log "Restarting Services ..."
+
 hooks/restart
