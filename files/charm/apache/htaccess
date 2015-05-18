@@ -1,0 +1,6 @@
+RewriteEngine On
+RewriteBase /
+RewriteCond %{REQUEST_FILENAME} !\.(jpg|jpeg|gif|png|css|js|ico|swf)$
+RewriteCond %{REQUEST_FILENAME} !{SERVER_NAME}\/uploads.$
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
