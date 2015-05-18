@@ -12,7 +12,7 @@ proxy_send_timeout 120;
 proxy_read_timeout 180;
 }
 
-location ~* \.(jpg|jpeg|gif|png|ico|css|bmp|swf|js|html|txt)$ {
+location ~* \.(jpg|jpeg|gif|png|ico|css|bmp|swf|js|txt)$ {
 root /srv/www/livestreet/htdocs/;
 }
 }

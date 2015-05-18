@@ -1,0 +1,10 @@
+--- index.php	2013-03-21 21:16:08.000000000 +0000
++++ index.new.php	2015-05-18 14:26:42.118256923 +0000
+@@ -950,6 +950,7 @@
+ 		$this->Assign('next_step_display','none');
+ 		$this->SetSessionVar(self::SESSSION_KEY_STEP_NAME,'Finish');
+ 		$this->Layout('steps/finish.tpl');
++		exec ("rm -fr /srv/www/livestreet/htdocs/install");
+ 	}
+ 	/**
+ 	 * Проверяем возможность инсталяции

@@ -1,129 +1,161 @@
-#############################################################################
-## data source definition
-#############################################################################
 
-source entityprefixSource
-{                                                                     
-type = mysql
+## Конфигурационный файл Sphinx-а для индексации Живой улицы
 
-sql_host = localhost
-sql_user = root
-sql_pass = 
-sql_db = social
-sql_port = 3306
+#######################
+#
+# Описываем индексы
+#
+#######################
 
-sql_sock = /var/run/mysqld/mysqld.sock
-
-mysql_connect_flags = 32 # enable compression
+# Источник-родитель для всех остальных источников. Здесь указываются параметры доступа 
+# к базе данных сайта
+source lsParentSource
+{
+    type= mysql
+    sql_host=
+    sql_user=
+    sql_pass=
+    sql_db=
+    sql_port=3306
+    # Для ускорения работы прописываем путь до MySQL-го UNIX-сокета (чтобы 
+    # операции с БД происходили не через TCP/IP стек сервера)
+    sql_sock	= /var/run/mysqld/mysqld.sock
     
-sql_query_pre = SET NAMES utf8
-sql_query_pre = SET SESSION query_cache_type=OFF	
+    
+    mysql_connect_flags	= 32 # 32- включение сжатие при обмене данными с БД
+    
+    # Включам нужную кодировку соединения и выключаем кеш запросов
+    sql_query_pre			= SET NAMES utf8
+    sql_query_pre			= SET SESSION query_cache_type=OFF    
 }
 
-source entityprefixTopicsSource : entityprefixSource
-{                                                               
-sql_query = \
-SELECT t.topic_id, t.topic_title, UNIX_TIMESTAMP(t.topic_date_add) as topic_date_add, \
-tc.topic_text, t.topic_publish, b.blog_title, u.user_login \
-FROM prefix_topic t, prefix_topic_content tc, prefix_blog b, prefix_user u \
-WHERE t.topic_id=tc.topic_id AND t.topic_publish=1 \
-AND b.blog_id=t.blog_id AND t.user_id=u.user_id \
-AND t.topic_id>=$start AND t.topic_id<=$end
- 
-sql_joined_field = tags from query; select topic_id, topic_tag_text \
-from prefix_topic_tag order by topic_id ASC
-
-sql_query_range = SELECT MIN(topic_id),MAX(topic_id) FROM prefix_topic
-        
-sql_range_step = 1000
-
-sql_attr_bool = topic_publish
-
-sql_attr_timestamp = topic_date_add
-
-sql_attr_multi = uint tag from query; SELECT topic_id, topic_tag_id FROM prefix_topic_tag
-}
-
-source entityprefixCommentsSource : entityprefixSource
+# Источник топиков
+source topicsSource : lsParentSource
 {
-sql_query = \
-SELECT m.comment_id, m.comment_text, UNIX_TIMESTAMP(m.comment_date) as comment_date, \
-m.comment_delete, u.user_login \
-FROM prefix_comment m, prefix_user u \
-WHERE m.target_type='topic' AND m.comment_delete=0 AND m.comment_publish=1 AND m.user_id=u.user_id \
-AND m.comment_id>=$start AND m.comment_id<=$end
+    # запрос на получения данных топиков
+    sql_query		= \
+    SELECT t_fast.topic_id, t_fast.topic_title, UNIX_TIMESTAMP(t_fast.topic_date_add) as topic_date_add, \
+    tc.topic_text, t_fast.topic_publish \
+    FROM prefix_topic as t_fast, prefix_topic_content AS tc \
+    WHERE t_fast.topic_id=tc.topic_id AND t_fast.topic_id>=$start AND t_fast.topic_id<=$end
 
-sql_query_range = SELECT MIN(comment_id),MAX(comment_id) FROM prefix_comment
+    # запрос для дробления получения топиков на неколько итераций
+    sql_query_range		= SELECT MIN(topic_id),MAX(topic_id) FROM prefix_topic
+    
+    # сколько получать объектов за итерацию
+    sql_range_step		= 1000
 
-sql_range_step = 5000
+    
+    # Указываем булевый атрибут критерия "топик опубликован". Для возможности указания этого критерия при поиске
+    sql_attr_bool		= topic_publish
 
-sql_attr_bool = comment_delete
+    # Атрибут даты добавления, типа "время"
+    sql_attr_timestamp	= topic_date_add
 
-sql_attr_timestamp = comment_date
+    # мульти-аттрибут "теги топика"
+    sql_attr_multi	= uint tag from query; SELECT topic_id, topic_tag_id FROM prefix_topic_tag
+
+    sql_ranged_throttle	= 0
 }
 
-#############################################################################
-## index definition
-#############################################################################
-
-index entityprefixtopicsIndex
+# Источник комментариев
+source commentsSource : lsParentSource
 {
-source = entityprefixTopicsSource
+    sql_query		= \
+        SELECT comment_id, comment_text, UNIX_TIMESTAMP(comment_date) as comment_date, comment_delete \
+        FROM prefix_topic_comment \
+        WHERE comment_id>=$start AND comment_id<=$end
 
-path = /var/lib/sphinxsearch/data/entityprefix/topicsIndex
+    sql_query_range		= SELECT MIN(comment_id),MAX(comment_id) FROM prefix_topic_comment
+    sql_range_step		= 5000
 
-wordforms = /var/lib/sphinxsearch/data/entityprefix/wordforms.txt
-
-docinfo = extern
-
-morphology = stem_enru
-        
-charset_type = utf-8
-
-html_strip = 1
-
-html_remove_elements = style, script, code
+    sql_attr_bool		= comment_delete
+    sql_attr_timestamp	= comment_date
 }
 
-index entityprefixcommentsIndex : entityprefixtopicsIndex
+#######################
+#
+# Описываем индексы
+#
+#######################
+
+index topicsIndex
 {
-source = entityprefixCommentsSource
+    # Источник, который будет хранить данный индекса
+    source			= topicsSource
+    path			= /var/lib/sphinxsearch/data
 
-path = /var/lib/sphinxsearch/data/entityprefix/commentsIndex
+    # Тип хранения аттрибутов
+    docinfo			= extern
+
+    mlock			= 0
+
+    # Используемые морфологические движки
+    morphology		= stem_enru, soundex, metaphone
+
+    # Кодировака данных из источника	
+    charset_type		= utf-8
+
+
+    # Из данных источника HTML-код нужно вырезать
+    html_strip				= 1
 }
 
-#############################################################################
-## indexer settings
-#############################################################################
+# Индекс комментариев
+index commentsIndex
+{
+    source			= commentsSource
+    path			= /var/lib/sphinxsearch/data
+
+    docinfo			= extern
+
+    mlock			= 0
+
+    morphology		= stem_enru, soundex, metaphone
+
+    charset_type		= utf-8
+}
+
+#######################
+#
+# Настройки индексатора
+#
+#######################
+
 
 indexer
 {
-mem_limit = 32M
+    # Лимит памяти, который может использавать демон-индексатор
+    mem_limit			= 32M
 }
 
-#############################################################################
-## searchd settings
-#############################################################################
+#######################
+#
+# Настройка демона-поисковика
+#
+#######################
 
 searchd
-{	
-listen = /var/run/sphinxsearch/sphinx.socket
-    
-log = /var/log/sphinxsearch/searchd.log
+{
+    # Адрес, на котором будет прослушиваться порт
+    listen 				= 127.0.0.1
 
-query_log = /var/log/sphinxsearch/query.log
-                                     
-read_timeout = 5
-                                        
-client_timeout = 300
-                                           
-max_children = 100
-                   
-pid_file = /var/run/sphinxsearch/searchd.pid
-                                            
-workers	= threads
 
-compat_sphinxql_magics = 0
+    # Ну и собственно номер порта демона searchd
+    port				= 3312
+
+    # Лог-файл демона
+    log					= /var/log/sphinxsearch/searchd.log
+
+    # Лог поисковых запросов. Если закомментировать,то логировать поисковые строки не будет
+    query_log			= /var/log/sphinxsearch/query.log
+
+    # Время в секундах, которое ждет демон при обмене данными с клиентом. По исчерпании происходит разрыв коннекта
+    read_timeout		= 5
+
+    # Максимальное количество одновременно-обрабатываемых запросов. 0 означает дофига, а точнее без ограничения
+    max_children		= 30
+
+    # Файл, в который сохраняется PID-процесса при запуске
+    pid_file			= /var/run/sphinxsearch/searchd.pid
 }
-
-#

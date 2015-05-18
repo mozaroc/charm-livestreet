@@ -42,12 +42,9 @@ sed -i "/sql_user/s/= root/= $user/" /etc/sphinxsearch/sphinx.conf
 sed -i "/sql_pass/s/= /= $password/" /etc/sphinxsearch/sphinx.conf
 sed -i "/sql_db/s/= /= $database/" /etc/sphinxsearch/sphinx.conf
 
-mkdir -p /var/lib/sphinxsearch/data/entityprefix/
+sed -i "/START/s/=no/=yes/" /etc/default/sphinxsearch
 
-#sed -i "s|value=\"{\$config.database_server}\"|value=\"$host\"|g" $install_path/setup/templates/database.tpl
-#sed -i "s|value=\"{\$config.database_user}\"|value=\"$user\"|g" $install_path/setup/templates/database.tpl
-#sed -i "s|value=\"{\$config.database_password}\"|value=\"$password\"|g"  $install_path/setup/templates/database.tpl
-#sed -i "s|value=\"{\$config.dbase}\"|value=\"$database\"|g"  $install_path/setup/templates/database.tpl
+mkdir -p /var/lib/sphinxsearch/data/
 
 
 #juju-log "first index"
