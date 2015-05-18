@@ -38,7 +38,7 @@ sed -i "s|___INSTALL_DB_PASSWORD___|$password|g" /srv/www/livestreet/htdocs/inst
 
 
 
-sed -i "/sql_user/s/= root/= $user/" /etc/sphinxsearch/sphinx.conf
+sed -i "/sql_user/s/= /= $user/" /etc/sphinxsearch/sphinx.conf
 sed -i "/sql_pass/s/= /= $password/" /etc/sphinxsearch/sphinx.conf
 sed -i "/sql_db/s/= /= $database/" /etc/sphinxsearch/sphinx.conf
 
