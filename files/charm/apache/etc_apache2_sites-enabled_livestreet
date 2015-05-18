@@ -18,7 +18,7 @@ Listen *:8080
         </Directory>
 
         <Directory /srv/www/livestreet/htdocs>
-                Options Indexes FollowSymLinks MultiViews
+                Options Indexes FollowSymLinks 
                 AllowOverride All
                 DirectoryIndex index.php
         </Directory>
