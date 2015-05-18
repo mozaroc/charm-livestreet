@@ -11,10 +11,11 @@ set_permissions() {
 	# Setting permissions as recommended by: 
 	# http://docs.joomla.org/Security_Checklist/Hosting_and_Server_Setup
 	if [ -d $install_path ]; then
-    chown -R www-data:www-data $install_path  
+                chown -R www-data:www-data $install_path  
 		chmod 750 $install_path
 		find $install_path -type f -exec chmod 644 {} \;
 		find $install_path -type d -exec chmod 755 {} \;
+		chmod 644 $install_path/.htaccess
 	else
 		juju-log "LiveStreet is not installed at $install_path"
 		exit 1

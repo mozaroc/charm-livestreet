@@ -1,6 +1,12 @@
+ddDefaultCharset UTF-8
 RewriteEngine On
-RewriteBase /
-RewriteCond %{REQUEST_FILENAME} !\.(jpg|jpeg|gif|png|css|js|ico|swf)$
-RewriteCond %{REQUEST_FILENAME} !{SERVER_NAME}\/uploads.$
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /index.php
+AddType text/x-component .htc
+<FilesMatch "\.(engine|inc|info|install|module|profile|test|po|sh|.*sql|theme|tpl(\.php)?|xtmpl|svn-base)$|^(code-style\.pl|Entries.*|Repository|Root|Template|all-wcprops|entries|format)$">
+  Order allow,deny
+</FilesMatch>
+Options -Indexes
+Options +FollowSymLinks
+Options -MultiViews
