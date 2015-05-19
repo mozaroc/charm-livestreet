@@ -63,10 +63,10 @@ source commentsSource : lsParentSource
 {
     sql_query		= \
         SELECT comment_id, comment_text, UNIX_TIMESTAMP(comment_date) as comment_date, comment_delete \
-        FROM prefix_topic_comment \
+        FROM prefix_comment \
         WHERE comment_id>=$start AND comment_id<=$end
 
-    sql_query_range		= SELECT MIN(comment_id),MAX(comment_id) FROM prefix_topic_comment
+    sql_query_range		= SELECT MIN(comment_id),MAX(comment_id) FROM prefix_comment
     sql_range_step		= 5000
 
     sql_attr_bool		= comment_delete
@@ -83,7 +83,7 @@ index topicsIndex
 {
     # Источник, который будет хранить данный индекса
     source			= topicsSource
-    path			= /var/lib/sphinxsearch/data
+    path			= /var/lib/sphinxsearch/data/topics
 
     # Тип хранения аттрибутов
     docinfo			= extern
@@ -105,7 +105,7 @@ index topicsIndex
 index commentsIndex
 {
     source			= commentsSource
-    path			= /var/lib/sphinxsearch/data
+    path			= /var/lib/sphinxsearch/data/comments
 
     docinfo			= extern
 
