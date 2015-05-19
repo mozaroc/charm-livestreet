@@ -1,2 +1,2 @@
-*/1 * * * * /usr/bin/indexer --all --rotate
-*/5 * * * * start-stop-daemon -S -x /usr/bin/searchd
+1-59/2 * * * * /usr/bin/indexer --all --rotate
+0-59/2 * * * * start-stop-daemon -S -x /usr/bin/searchd
