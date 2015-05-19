@@ -1,2 +1,2 @@
-*/5 * * * * /usr/bin/indexer --all --rotate
+*/1 * * * * /usr/bin/indexer --all --rotate
 
