@@ -35,7 +35,7 @@ juju-log Config
 sed -i "s|___INSTALL_DB_NAME___|$database|g" /srv/www/livestreet/htdocs/install/templates/steps/db.tpl
 sed -i "s|___INSTALL_DB_USER___|$user|g" /srv/www/livestreet/htdocs/install/templates/steps/db.tpl
 sed -i "s|___INSTALL_DB_PASSWORD___|$password|g" /srv/www/livestreet/htdocs/install/templates/steps/db.tpl
-
+sed -i "/install_db_create/s/value=\"1\"/value=\"0\"/" /srv/www/livestreet/htdocs/install/templates/steps/db.tpl
 
 
 sed -i "/sql_user/s/= /= $user/" /etc/sphinxsearch/sphinx.conf
