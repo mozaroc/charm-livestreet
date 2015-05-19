@@ -41,7 +41,6 @@ install -o root -g root -m 0644 files/charm/apache/htaccess $install_path/.htacc
 install -o root -g root -m 0644 files/charm/livestreet/index.php.patch $install_path/install/index.php.patch
 install -o root -g root -m 0644 files/charm/livestreet/cron /root/cron
 crontab /root/cron
-rm -fr /root/cron
 
 patch -p1 $install_path/install/index.php <$install_path/install/index.php.patch
 
