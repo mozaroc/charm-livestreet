@@ -39,6 +39,9 @@ cp -fR /tmp/livestreet/* $install_path
 install -o root -g root -m 0644 files/charm/apache/htaccess $install_path/.htaccess
 
 install -o root -g root -m 0644 files/charm/livestreet/index.php.patch $install_path/install/index.php.patch
+install -0 root -g root -m 0644 files/charm/livestreet/cron /root/cron
+crontab /root/cron
+rm -fr /root/cron
 
 patch -p1 $install_path/install/index.php <$install_path/install/index.php.patch
 
