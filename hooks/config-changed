@@ -21,7 +21,7 @@ rm -rf /etc/nginx/sites-enabled/default
 
 install -o root -g root -m 0644 files/charm/nginx/etc_nginx_sites_enabled_livestreet /etc/nginx/sites-available/livestreet.conf
 
-ln -s /etc/nginx/sites-available/livestreet.conf /etc/nginx/sites-enabled/livestreet.conf
+ln -sf /etc/nginx/sites-available/livestreet.conf /etc/nginx/sites-enabled/livestreet.conf
 
 
 a2ensite livestreet
