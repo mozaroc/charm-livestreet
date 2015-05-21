@@ -13,9 +13,9 @@ source lsParentSource
 {
     type= mysql
     sql_host=localhost
-    sql_user= 
-    sql_pass= 
-    sql_db= 
+    sql_user=__user__
+    sql_pass=__pass__
+    sql_db=__db__
     sql_port=3306
     # Для ускорения работы прописываем путь до MySQL-го UNIX-сокета (чтобы 
     # операции с БД происходили не через TCP/IP стек сервера)
