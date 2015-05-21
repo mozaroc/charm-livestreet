@@ -38,9 +38,9 @@ sed -i "s|___INSTALL_DB_PASSWORD___|$password|g" /srv/www/livestreet/htdocs/inst
 sed -i "/install_db_create/s/value=\"1\"/value=\"0\"/" /srv/www/livestreet/htdocs/install/templates/steps/db.tpl
 
 
-sed -i "/sql_user/s/=__user__ /= $user/" /etc/sphinxsearch/sphinx.conf
-sed -i "/sql_pass/s/=__pass__ /= $password/" /etc/sphinxsearch/sphinx.conf
-sed -i "/sql_db/s/=__db__ /= $database/" /etc/sphinxsearch/sphinx.conf
+sed -i "s|__user__|$user|g" /etc/sphinxsearch/sphinx.conf
+sed -i "s|__pass__|$password|g" /etc/sphinxsearch/sphinx.conf
+sed -i "s|__db__|$database|g" /etc/sphinxsearch/sphinx.conf
 
 sed -i "/START/s/=no/=yes/" /etc/default/sphinxsearch
 
